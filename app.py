@@ -114,13 +114,15 @@ def login():
         if user:
             if user.confirmed:
                 if user.password == password and user.username == username:
-                    return redirect(url_for('individual_page'))
+                    return render_template('individual_page.html')
                 else:
-                    return 'Incorrect password. Please try again.'
+                    return '''Неправильный пароль.
+                            <a href="/login" class="btn btn-secondary"><button type="button" class="btn btn-primary">Вернуться к логину</button></a>'''
             else:
-                return 'Please confirm your account before logging in.'
+                return '''Неактивная учётная запись.
+                            <a href="/" class="btn btn-secondary"><button type="button" class="btn btn-primary">Вернуться к регистрации</button></a>'''
         else:
-            return 'Incorrect username. Please try again.'
+            return '''Неправильное имя пользователя. <a href="/login" class="btn btn-secondary"><button type="button" class="btn btn-primary">Вернуться к логину</button></a> '''
     return render_template('existing_user.html')
 
 
