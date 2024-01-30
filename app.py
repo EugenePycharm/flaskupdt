@@ -17,6 +17,12 @@ mail = Mail(app)
 db = SQLAlchemy(app)
 
 
+
+
+@app.route('/homepage', endpoint='home', methods=['GET', 'POST'])
+def index():
+    return render_template('site/index.html')
+
 def generate_confirmation_code():
     return secrets.token_hex(6)
 
@@ -65,7 +71,7 @@ def register():
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             # Return an error if the user already exists
-            return render_template('existing_user.html')
+            return render_template('login.html')
         else:
             # Create a new user if the user does not exist
             user = User(username=username, password=password, email=email)
@@ -97,12 +103,12 @@ def confirm_email(confirmation_code):
                     user.confirmed = True
                     db.session.delete(email_confirmation)
                     db.session.commit()
-                    return 'You have successfully confirmed your account. You can now login.'
+                    return ('Вы успешно активировали аккаунт <a href="/individual_page" class="btn '
+                            'btn-secondary"><button type="button" class="btn btn-primary">В кабинет</button></a>')
                 else:
-                    return 'Incorrect confirmation code. Please try again.'
-            return render_template('confirm_email.html', confirmation_code=confirmation_code)
+                    return 'Неправильный код подтверждения.'
     else:
-        return 'Email confirmation not found. Please try again.'
+        return 'Код подтверждения не существует.'
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -116,14 +122,15 @@ def login():
                 if user.password == password and user.username == username:
                     return render_template('individual_page.html')
                 else:
-                    return '''Неправильный пароль.
-                            <a href="/login" class="btn btn-secondary"><button type="button" class="btn btn-primary">Вернуться к логину</button></a>'''
+                    return '''Неправильный пароль. <a href="/login" class="btn btn-secondary"><button type="button" 
+                    class="btn btn-primary">Вернуться к логину</button></a>'''
             else:
-                return '''Неактивная учётная запись.
-                            <a href="/" class="btn btn-secondary"><button type="button" class="btn btn-primary">Вернуться к регистрации</button></a>'''
+                return '''Неактивная учётная запись. <a href="/" class="btn btn-secondary"><button type="button" 
+                class="btn btn-primary">Вернуться к регистрации</button></a>'''
         else:
-            return '''Неправильное имя пользователя. <a href="/login" class="btn btn-secondary"><button type="button" class="btn btn-primary">Вернуться к логину</button></a> '''
-    return render_template('existing_user.html')
+            return '''Неправильное имя пользователя. <a href="/login" class="btn btn-secondary"><button type="button" 
+            class="btn btn-primary">Вернуться к логину</button></a>'''
+    return render_template('login.html')
 
 
 if __name__ == '__main__':
