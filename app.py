@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import secrets
 
 app = Flask(__name__)
-
+app.config['STATIC_FOLDER'] = 'static'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -17,11 +17,10 @@ mail = Mail(app)
 db = SQLAlchemy(app)
 
 
-
-
-@app.route('/homepage', endpoint='home', methods=['GET', 'POST'])
+@app.route('/', endpoint='mainpage', methods=['GET', 'POST'])
 def index():
-    return render_template('site/index.html')
+    return render_template('index.html')
+
 
 def generate_confirmation_code():
     return secrets.token_hex(6)
@@ -56,10 +55,6 @@ class User(db.Model):
         send_confirmation_code(self.email, confirmation_code)
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    return render_template('register.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -85,6 +80,7 @@ def register():
             send_confirmation_code(user.email, confirmation_code)
             # Redirect to the confirm_email page with the confirmation code
             return render_template('confirmation_sent.html', confirmation_code=confirmation_code)
+    return render_template('register.html')
 
 
 @app.route('/confirm-email/<confirmation_code>', methods=['GET', 'POST'])
@@ -103,8 +99,7 @@ def confirm_email(confirmation_code):
                     user.confirmed = True
                     db.session.delete(email_confirmation)
                     db.session.commit()
-                    return ('Вы успешно активировали аккаунт <a href="/individual_page" class="btn '
-                            'btn-secondary"><button type="button" class="btn btn-primary">В кабинет</button></a>')
+                    return render_template('confirmed.html')
                 else:
                     return 'Неправильный код подтверждения.'
     else:
@@ -120,7 +115,7 @@ def login():
         if user:
             if user.confirmed:
                 if user.password == password and user.username == username:
-                    return render_template('individual_page.html')
+                    return render_template('index.html')
                 else:
                     return '''Неправильный пароль. <a href="/login" class="btn btn-secondary"><button type="button" 
                     class="btn btn-primary">Вернуться к логину</button></a>'''
