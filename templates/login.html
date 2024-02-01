@@ -13,7 +13,7 @@
 </head>
 <body>
 {% include"header_noauth.html" %}
-    <div class="container">
+    <div class="container" style="height: 65vh">
         <div data-aos="fade-up" class="row">
             <div class="col-md-6 offset-md-3 mt-5">
                 <h2 class="heading mb-3 text-center"><span class="text-primary">Войти</span> в аккаунт</h2>
@@ -28,15 +28,10 @@
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Войти</button>
                 </form>
-                <div class="mt-3">
-                    <a href="/register" class="btn btn-info w-100">К регистрации</a>
-                </div>
-                <div class="mt-3">
-                    <a href="/" class="btn btn-info w-100">На главную</a>
-                </div>
             </div>
         </div>
     </div>
+{% include "footer.html" %}
     <script>
   AOS.init();
 </script>
