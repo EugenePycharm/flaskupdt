@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, make_response, flash
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 import secrets
@@ -12,15 +12,17 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'rprocess58@gmail.com'
 app.config['MAIL_PASSWORD'] = 'adxj cpnb fnua lwaq'
+app.config['SECRET_KEY'] = secrets.token_urlsafe()
+
 app.app_context().push()
 mail = Mail(app)
 db = SQLAlchemy(app)
 
 
-@app.route('/', endpoint='mainpage', methods=['GET', 'POST'])
-def index():
-    return render_template('index.html')
-
+@app.route('/', methods=['GET', 'POST'])
+def mainpage():
+    user_id = request.cookies.get('user_id')
+    return render_template('index.html', user_id=user_id)
 
 def generate_confirmation_code():
     return secrets.token_hex(6)
@@ -46,6 +48,7 @@ class User(db.Model):
     password = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     confirmed = db.Column(db.Boolean, default=False)
+
 
     def send_confirmation_code(self):
         confirmation_code = generate_confirmation_code()
@@ -115,7 +118,9 @@ def login():
         if user:
             if user.confirmed:
                 if user.password == password and user.username == username:
-                    return render_template('index.html')
+                    response = make_response(redirect('/'))
+                    response.set_cookie('user_id', str(user.id), max_age=60*60*24*15)
+                    return response
                 else:
                     return '''Неправильный пароль. <a href="/login" class="btn btn-secondary"><button type="button" 
                     class="btn btn-primary">Вернуться к логину</button></a>'''

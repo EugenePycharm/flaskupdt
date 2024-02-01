@@ -10,8 +10,7 @@
     transition: -webkit-transform .6s ease !important;
     transition: transform .6s ease !important;
     transition: transform .6s ease,-webkit-transform .6s ease !important;
-} 
-
+}
 
 .bg-primary {
   background-color: #2f55d4 !important;
