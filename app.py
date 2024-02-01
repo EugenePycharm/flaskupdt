@@ -85,6 +85,9 @@ def register():
             return render_template('confirmation_sent.html', confirmation_code=confirmation_code)
     return render_template('register.html')
 
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
 
 @app.route('/confirm-email/<confirmation_code>', methods=['GET', 'POST'])
 def confirm_email(confirmation_code):
